@@ -3,6 +3,6 @@ How to run:
 
 `npm install`
 
-`npm start`
+`npm run watch` or `node server.js`
 
 Open localhost:3000 in browser
