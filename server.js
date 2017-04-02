@@ -9,7 +9,7 @@ const app = express();
 
 // set up database
 // DB.connect('mongodb://alakerta:q1w2e3r4@localhost/alakerta', app);
-DB.connect('mongodb://alakerta:q1w2e3r4@node12679-alakerta.jelastic.metropolia.fi/alakerta', app);
+DB.connect('mongodb://alakerta:q1w2e3r4@mongodb12679-alakerta.jelastic.metropolia.fi/alakerta', app);
 const spySchema = {
     time: Date,
     category: String,
