@@ -26,7 +26,6 @@ const createCard = (image, title, texts) => {
 
 const categoryButtons = (items) => {
     items = removeDuplicates(items, 'category');
-    console.log(items);
     document.querySelector('#categories').innerHTML = '';
     for (let item of items) {
         const button = document.createElement('button');
@@ -45,7 +44,7 @@ const sortItems = (items, rule) => {
     update(newItems);
 };
 
-const getData = () => {
+const getData = (params) => {
     fetch('/posts')
         .then(response => {
             return response.json();
@@ -54,8 +53,19 @@ const getData = () => {
             originalData = items;
             update(items);
         });
-
+    if(params != null){
+        fetch('/posts/' + params)
+            .then(response => {
+                return response.json();
+            })
+            .then(items => {
+                originalData = items;
+                console.log(items);
+                update(items);
+            });
+    }
 };
+
 
 const removeDuplicates = (myArr, prop) => {
     return myArr.filter((obj, pos, arr) => {
@@ -87,7 +97,49 @@ const update = (items) => {
         });
         document.querySelector('.card-deck').appendChild(article);
     }
+    createOptions(items);
+    initDeleteCat(items)
 };
+
+const initDeleteCat = (items) => {
+    let deleteSelection = '';
+    const catDelete = document.getElementById('deleteJumbo');
+    for (let item of items) {
+        deleteSelection += `<option cat-id="`+ item.id +`">${item.title}</option>`;
+    }
+    catDelete.innerHTML = deleteSelection;
+    catDelete.addEventListener('change', () => {
+        document.getElementById('deleteFormCatId').value = items[catDelete.selectedIndex]._id;
+        document.getElementById('deleteTitle').innerHTML = items[catDelete.selectedIndex].title;
+        document.getElementById('deleteCategory').innerHTML = items[catDelete.selectedIndex].category;
+        document.getElementById('deleteDetails').innerHTML = items[catDelete.selectedIndex].details;
+        document.querySelector('#deleteImg').src = items[catDelete.selectedIndex].thumbnail;
+    });
+}
+
+const createOptions = (items) =>{
+
+    let selection = '';
+    const catSelect = document.getElementById('editJumbo');
+    for (let item of items) {
+        selection += `<option cat-id="`+ item.id +`">${item.title}</option>`;
+    }
+    catSelect.innerHTML = selection; 
+    catSelect.addEventListener('change', () => {
+    document.getElementById('formCatId').value = items[catSelect.selectedIndex]._id;
+    document.getElementById('editTitle').value = items[catSelect.selectedIndex].title;
+    document.getElementById('editCategory').value = items[catSelect.selectedIndex].category;
+    document.getElementById('editDetails').value = items[catSelect.selectedIndex].details;
+});
+
+    /*const editUpdate = document.getELementById('editUpdate');
+    editUpdate.addEventListener('click', () => {
+        document.getElementById('formCatId').value = items[catSelect.selectedIndex]._id;
+        document.getElementById('editTitle').value = items[catSelect.selectedIndex].title;
+        document.getElementById('editCategory').value = items[catSelect.selectedIndex].category;
+        document.getElementById('editDetails').value = items[catSelect.selectedIndex].details;
+    });*/
+}
 
 const initMap = () => {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -110,6 +162,43 @@ const resetMap = (item) => {
 };
 
 initMap();
+// delete existing object
+document.querySelector('#spyDeleteForm').addEventListener('submit', (evt) => {
+   evt.preventDefault();
+   const data = new FormData(evt.target);
+   deleteData(data, '/delete');
+});
+
+
+// update existing object
+document.querySelector('#spyEditForm').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const data = new FormData(evt.target);
+    /*
+    const fileElement = event.target.querySelector('input[type=file]');
+    const file = fileElement.files[0];
+    data.append('file', file);
+    */
+    postData(data, '/update');
+});
+
+const validateForm = (data) => {
+    if(data.title != '' && data.details != '' && data.category != ''){
+    }
+}
+
+const initSearch = () => {
+    const search = document.getElementById('search');
+    search.addEventListener('input', (evt) => {
+        if(search.value != ''){
+            getData(search.value);
+        }
+        else {
+            getData();
+        }
+    });
+}
+
 
 // add new
 document.querySelector('#spyForm').addEventListener('submit', (evt) => {
@@ -118,18 +207,28 @@ document.querySelector('#spyForm').addEventListener('submit', (evt) => {
     const fileElement = event.target.querySelector('input[type=file]');
     const file = fileElement.files[0];
     data.append('file', file);
+    postData(data, '/new')
+});
 
-    const url = '/new';
-
+const deleteData = (data, url) => {
     fetch(url, {
-        method: 'post',
+        method: 'delete',
         body: data
-    }).then((resp)=> {
-        // console.log(resp);
+    }).then((respo) => {
         getData();
         $('#myTabs a:first').tab('show');
     });
-});
+}
+
+const postData = (data, url) => {
+        fetch(url, {
+            method: 'post',
+            body: data
+        }).then((resp) => {
+            getData();
+            $('#myTabs a:first').tab('show');
+        });
+}
 
 
 // init tabs
@@ -137,3 +236,5 @@ $('#myTabs a').click(function (e) {
     e.preventDefault();
     $(this).tab('show');
 });
+
+initSearch();

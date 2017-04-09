@@ -1,6 +1,3 @@
-"use strict";
-
-
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
@@ -15,8 +12,8 @@ const app = express();
 const user = process.env.DB_USER;
 const pw = process.env.DB_PASS;
 const host = process.env.DB_HOST;
-// set up database
-// DB.connect('mongodb://alakerta:q1w2e3r4@localhost/alakerta', app);
+
+
 DB.connect('mongodb://' + user + ':'+ pw +'@' + host, app);
 const spySchema = {
     time: Date,
@@ -52,8 +49,50 @@ app.use(express.static('files'));
 
 app.use('/modules', express.static('node_modules'));
 
+/**
+ * @api {get} /posts/:search Search for an object from the database
+ * @apiName Search get
+ * @apiGroup Gets
+ * @apiDescription Search Search for objects from the database with requirements
+ * @apiParam {JSON} FormData A form data object with the search parameters as requirements.params.search
+ *
+ * @apiSuccess {JSON} send Send response with status 'OK' and post that includes search results from the database
+ *
+ */
+
+app.get('/posts/:search', (req, res) => {
+    getSpys(req.params.search).exec((err, result) => {
+        res.send(result);
+    });
+});
+
+/**
+ * @api {delete} /delete deleting an existing object from database
+ * @apiName Delete delete
+ * @apiGroup Deletes
+ * @apiDescription Delete existing object's data from the database
+ * @apiParam {JSON} FormData A form data with the object ID that you want to delete from the database
+ *
+ * @apiSuccess {JSON} send Object is deleted from database and will send response with status 'OK' and post
+ *
+ */
+app.delete('/delete', upload.single('file'), (req, res) => {
+    console.log(req.body);
+    removeFromDb(req.body,res);
+});
 
 
+
+/**
+ * @api {get} /posts Get all the Spy objects from the database
+ * @apiName GetAll get
+ * @apiGroup Gets
+ * @apiDescription Get get all existing objects from the database
+ * @apiParam {JSON} FormData A form data with the requirements to get all items from database
+ *
+ * @apiSuccess {JSON} send Get objects from the database with find from the database and send a response with status 'OK' and post that includes the data gotten from the database
+ *
+ */
 // get posts
 app.get('/posts', (req, res) => {
     getSpys().then((posts) => {
@@ -61,23 +100,17 @@ app.get('/posts', (req, res) => {
     });
 });
 
-// get search posts
-app.get('/posts/:search', (req, res) => {
-    getSpys(req.params.search).exec((err, result) => {
-        res.send(result);
-    });
-});
+/**
+ * @api {post} /update updating an existing object in database
+ * @apiName Update post
+ * @apiGroup Posts
+ * @apiDescription Change existing object's data within the database and save it
+ * @apiParam {JSON} FormData A form data with the object that you want to update/edit
+ *
+ * @apiSuccess {JSON} send Object is updated in database and will send response with status 'OK' and post
+ * 
+ */
 
-// delete posts
-/* app.delete('/delete', (req, res) => {
-    removeFromDb(req.body);
-    res.send(result);
-}); */
-
-app.delete('/delete', upload.single('file'), (req, res) => {
-    console.log(req.body);
-    removeFromDb(req.body,res);
-});
 
 // update object in database, first receive post and create image
 app.post('/update', upload.single('file'), (req, res, next) => {
@@ -103,8 +136,6 @@ app.use('/update', (req, res, next) => {
     next();
 });
 
-app.use('/docs', express.static('docs'));
-
 // updating the database with req body object.
 app.use('/update', (req, res, next) => {
     // console.log(req.body);
@@ -118,6 +149,18 @@ app.use('/update', (req, res, next) => {
 
 // add new *************
 // get form data and create object for database (=req.body)
+
+/**
+ * @api {post} /new adding a post to database
+ * @apiName Add new
+ * @apiGroup Posts
+ * @apiDescription Create new objects into the database based on received form data
+ * @apiParam {JSON} FormData A form data object submitted from the front end
+ *
+ * @apiSuccess {JSON} send Sends response with status 'OK' and post
+ * 
+ */
+
 app.post('/new', upload.single('file'), (req, res, next) => {
     const file = req.file;
     req.body.thumbnail = 'thumb/' + file.filename;
@@ -164,21 +207,19 @@ const gpsToDecimal = (gpsData, hem) => {
     return (hem === 'S' || hem === 'W') ? d *= -1 : d;
 };
 
-
-
 // SOME ESSENTIAL FUNCTIONS
 
 const updateDb = (obj) => {
     console.log(obj._id);
     Spy.update({ _id: obj._id},
-        { $set: 
+        { $set:
             {title: obj.title,
-            details: obj.details,
-            category: obj.category, 
-            image: obj.image, 
-            thumbnail: obj.thumbnail, 
-            original: obj.original}
-    }, (err) => {
+                details: obj.details,
+                category: obj.category,
+                image: obj.image,
+                thumbnail: obj.thumbnail,
+                original: obj.original}
+        }, (err) => {
             if (!err){
                 console.log('Updated name to ' + obj.title );
             }
@@ -189,18 +230,18 @@ const updateDb = (obj) => {
 }
 
 const removeFromDb = (obj,res) => {
-        Spy.remove({_id: obj._id}, (err) => {
-            if(!err){
-                console.log('Deleted: ' + obj.title + '!');
-            }
-            else {
-                console.log(err);
-            }
-        }).then(post => {
-            res.send({status: 'OK', post: post});
-        }).then(() => {
-            res.send({status: 'error', message: 'Database error'});
-        });
+    Spy.remove({_id: obj._id}, (err) => {
+        if(!err){
+            console.log('Deleted: ' + obj.title + '!');
+        }
+        else {
+            console.log(err);
+        }
+    }).then(post => {
+        res.send({status: 'OK', post: post});
+    }).then(() => {
+        res.send({status: 'error', message: 'Database error'});
+    });
 }
 
 const getSpys = (params) => {
@@ -211,6 +252,6 @@ const getSpys = (params) => {
     }
     else {
         const promise = Spy.find().exec();
-        return promise;   
+        return promise;
     }
 }

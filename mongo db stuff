@@ -1,0 +1,24 @@
+mongod --auth --port 27017 --dbpath /data/db
+
+mongo --port 27017
+
+use [dbname]
+
+db.createUser(
+{
+user: "myUserAdmin",
+pwd: "abc123",
+roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+}
+)
+
+mongo --port 27017 -u "myUserAdmin" -p "abc123" --authenticationDatabase "admin"
+
+db.createUser(   {
+   user: "myTester",
+   pwd: "xyz123",
+   roles: [ { role: "readWrite", db: "test" } ]
+  }
+)
+
+db.getUsers()
