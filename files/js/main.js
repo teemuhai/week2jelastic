@@ -45,14 +45,6 @@ const sortItems = (items, rule) => {
 };
 
 const getData = (params) => {
-    fetch('/posts')
-        .then(response => {
-            return response.json();
-        })
-        .then(items => {
-            originalData = items;
-            update(items);
-        });
     if(params != null){
         fetch('/posts/' + params)
             .then(response => {
@@ -61,6 +53,16 @@ const getData = (params) => {
             .then(items => {
                 originalData = items;
                 console.log(items);
+                update(items);
+            });
+    }
+    else {
+        fetch('/posts')
+            .then(response => {
+                return response.json();
+            })
+            .then(items => {
+                originalData = items;
                 update(items);
             });
     }
@@ -102,7 +104,7 @@ const update = (items) => {
 };
 
 const initDeleteCat = (items) => {
-    let deleteSelection = '';
+    let deleteSelection = `<option>Select a cat</option>`;
     const catDelete = document.getElementById('deleteJumbo');
     for (let item of items) {
         deleteSelection += `<option cat-id="`+ item.id +`">${item.title}</option>`;
@@ -119,7 +121,7 @@ const initDeleteCat = (items) => {
 
 const createOptions = (items) =>{
 
-    let selection = '';
+    let selection = `<option>Select a cat</option>`;
     const catSelect = document.getElementById('editJumbo');
     for (let item of items) {
         selection += `<option cat-id="`+ item.id +`">${item.title}</option>`;
@@ -131,14 +133,6 @@ const createOptions = (items) =>{
     document.getElementById('editCategory').value = items[catSelect.selectedIndex].category;
     document.getElementById('editDetails').value = items[catSelect.selectedIndex].details;
 });
-
-    /*const editUpdate = document.getELementById('editUpdate');
-    editUpdate.addEventListener('click', () => {
-        document.getElementById('formCatId').value = items[catSelect.selectedIndex]._id;
-        document.getElementById('editTitle').value = items[catSelect.selectedIndex].title;
-        document.getElementById('editCategory').value = items[catSelect.selectedIndex].category;
-        document.getElementById('editDetails').value = items[catSelect.selectedIndex].details;
-    });*/
 }
 
 const initMap = () => {
@@ -214,7 +208,7 @@ const deleteData = (data, url) => {
     fetch(url, {
         method: 'delete',
         body: data
-    }).then((respo) => {
+    }).then((resp) => {
         getData();
         $('#myTabs a:first').tab('show');
     });
