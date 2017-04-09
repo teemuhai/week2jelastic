@@ -52,7 +52,7 @@ app.use(express.static('files'));
 
 app.use('/modules', express.static('node_modules'));
 
-
+app.use('/docs', express.static('docs'));
 
 // get posts
 app.get('/posts', (req, res) => {
@@ -68,52 +68,46 @@ app.get('/posts/:search', (req, res) => {
     });
 });
 
-// delete posts
-/* app.delete('/delete', (req, res) => {
-    removeFromDb(req.body);
-    res.send(result);
-}); */
 
 app.delete('/delete', upload.single('file'), (req, res) => {
-    console.log(req.body);
-    removeFromDb(req.body,res);
+    removeFromDb(req.body, res);
 });
 
 // update object in database, first receive post and create image
-app.post('/update', upload.single('file'), (req, res, next) => {
-    const file = req.file;
-    req.body.thumbnail = 'thumb/' + file.filename;
-    req.body.image = 'img/' + file.filename;
-    req.body.original = 'original/' + file.filename;
+app.patch('/update', upload.single('file'), (req, res, next) => {
+    if (req.file != null) {
+        const file = req.file;
+        req.body.thumbnail = 'thumb/' + file.filename;
+        req.body.image = 'img/' + file.filename;
+        req.body.original = 'original/' + file.filename;
+    }
     req.body.time = new Date().getTime();
-    req.body.coordinates = { lat: 60.3196781, lng: 24.9079786};
-        next(); 
+    req.body.coordinates = {
+        lat: 60.2196781,
+        lng: 24.8079786
+    };
+    next();
 });
 
 // creating thumbnails and shiz
 app.use('/update', (req, res, next) => {
-    const small = thumbnail.getThumbnail('files/'+req.body.original, 'files/'+req.body.thumbnail, 300, 300);
-    if( typeof small === 'object'){
-        res.send(small);
-    }
-    const medium = thumbnail.getThumbnail('files/'+req.body.original, 'files/'+req.body.image, 720, 480);
-    if( typeof medium === 'object'){
-        res.send(medium);
+    if (req.file != null){
+        const small = thumbnail.getThumbnail('files/'+req.body.original, 'files/'+req.body.thumbnail, 300, 300);
+        if( typeof small === 'object'){
+            res.send(small);
+        }
+        const medium = thumbnail.getThumbnail('files/'+req.body.original, 'files/'+req.body.image, 720, 480);
+        if( typeof medium === 'object'){
+            res.send(medium);
+        }
     }
     next();
 });
 
-app.use('/docs', express.static('docs'));
-
 // updating the database with req body object.
 app.use('/update', (req, res, next) => {
     // console.log(req.body);
-    updateDb(req.body);
-    console.log('Here lies req.body: ');
-    console.log(req.body);
-    getSpys().then((posts) => {
-        res.send({status: 'OK', post: posts});
-    });
+    updateDb(req.body, res);
 });
 
 // add new *************
@@ -162,36 +156,29 @@ app.use('/new', (req, res, next) => {
 const gpsToDecimal = (gpsData, hem) => {
     let d = parseFloat(gpsData[0]) + parseFloat(gpsData[1] / 60) + parseFloat(gpsData[2] / 3600);
     return (hem === 'S' || hem === 'W') ? d *= -1 : d;
-};
+}
+
 
 
 
 // SOME ESSENTIAL FUNCTIONS
 
-const updateDb = (obj) => {
+const updateDb = (obj, res) => {
     console.log(obj._id);
-    Spy.update({ _id: obj._id},
-        { $set: 
-            {title: obj.title,
-            details: obj.details,
-            category: obj.category, 
-            image: obj.image, 
-            thumbnail: obj.thumbnail, 
-            original: obj.original}
-    }, (err) => {
-            if (!err){
-                console.log('Updated name to ' + obj.title );
-            }
-            else{
-                throw err;
-            }
-        });
+    Spy.update(
+        {_id  : obj._id},
+        {$set: obj}
+    ).then(post => {
+        res.send({status: 'OK', post: post});
+    }).then(() => {
+        res.send({status: 'error', message: 'Database error'});
+    });
 }
 
 const removeFromDb = (obj,res) => {
         Spy.remove({_id: obj._id}, (err) => {
             if(!err){
-                console.log('Deleted: ' + obj.title + '!');
+                console.log('Deleted!');
             }
             else {
                 console.log(err);

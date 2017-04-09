@@ -104,7 +104,7 @@ const update = (items) => {
 };
 
 const initDeleteCat = (items) => {
-    let deleteSelection = `<option>Select a cat</option>`;
+    let deleteSelection = '';
     const catDelete = document.getElementById('deleteJumbo');
     for (let item of items) {
         deleteSelection += `<option cat-id="`+ item.id +`">${item.title}</option>`;
@@ -121,7 +121,7 @@ const initDeleteCat = (items) => {
 
 const createOptions = (items) =>{
 
-    let selection = `<option>Select a cat</option>`;
+    let selection = '';
     const catSelect = document.getElementById('editJumbo');
     for (let item of items) {
         selection += `<option cat-id="`+ item.id +`">${item.title}</option>`;
@@ -168,12 +168,11 @@ document.querySelector('#spyDeleteForm').addEventListener('submit', (evt) => {
 document.querySelector('#spyEditForm').addEventListener('submit', (evt) => {
     evt.preventDefault();
     const data = new FormData(evt.target);
-    /*
     const fileElement = event.target.querySelector('input[type=file]');
     const file = fileElement.files[0];
     data.append('file', file);
-    */
-    postData(data, '/update');
+
+    postData(data, '/update', 'PATCH');
 });
 
 const validateForm = (data) => {
@@ -201,7 +200,7 @@ document.querySelector('#spyForm').addEventListener('submit', (evt) => {
     const fileElement = event.target.querySelector('input[type=file]');
     const file = fileElement.files[0];
     data.append('file', file);
-    postData(data, '/new')
+    postData(data, '/new', 'post');
 });
 
 const deleteData = (data, url) => {
@@ -214,9 +213,9 @@ const deleteData = (data, url) => {
     });
 }
 
-const postData = (data, url) => {
+const postData = (data, url, method) => {
         fetch(url, {
-            method: 'post',
+            method: method,
             body: data
         }).then((resp) => {
             getData();

@@ -139,6 +139,43 @@ define({ "api": [
     "groupTitle": "Gets"
   },
   {
+    "type": "patch",
+    "url": "/update",
+    "title": "Update an existing object in database",
+    "name": "Update_patch",
+    "group": "Patches",
+    "description": "<p>Change existing object's data within the database and save it</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "FormData",
+            "description": "<p>A form data with the object that you want to update/edit</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "send",
+            "description": "<p>Object is updated in database and will send response with status 'OK' and post</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "docs/server.js",
+    "groupTitle": "Patches"
+  },
+  {
     "type": "post",
     "url": "/new",
     "title": "adding a post to database",
@@ -167,43 +204,6 @@ define({ "api": [
             "optional": false,
             "field": "send",
             "description": "<p>Sends response with status 'OK' and post</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "docs/server.js",
-    "groupTitle": "Posts"
-  },
-  {
-    "type": "post",
-    "url": "/update",
-    "title": "updating an existing object in database",
-    "name": "Update_post",
-    "group": "Posts",
-    "description": "<p>Change existing object's data within the database and save it</p>",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "JSON",
-            "optional": false,
-            "field": "FormData",
-            "description": "<p>A form data with the object that you want to update/edit</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "send",
-            "description": "<p>Object is updated in database and will send response with status 'OK' and post</p>"
           }
         ]
       }

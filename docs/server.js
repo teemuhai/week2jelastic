@@ -101,9 +101,9 @@ app.get('/posts', (req, res) => {
 });
 
 /**
- * @api {post} /update updating an existing object in database
- * @apiName Update post
- * @apiGroup Posts
+ * @api {patch} /update Update an existing object in database
+ * @apiName Update patch
+ * @apiGroup Patches
  * @apiDescription Change existing object's data within the database and save it
  * @apiParam {JSON} FormData A form data with the object that you want to update/edit
  *
