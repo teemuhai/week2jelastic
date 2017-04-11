@@ -30,12 +30,12 @@ const app = express();
 app.use(cookieParser());
 
 //for webcam
-//app.use(express.static('publix'));
+app.use(express.static('publix'));
 
 //for other routing shit
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
-app.use(require('./routes'));
+//app.use(require('./routes'));
 /*app.get('/', (req, res) => {
     const cookie = req.cookies.testCookies;
     const timex = moment().format('MMMM Do YYYY, h:mm a');
@@ -141,7 +141,7 @@ const ExCat = mongoose.model('ExCat', exCatSchema);
 
 //exCat.create({name: 'derpy', age: '8', gender: 'male', weight: '12'})
 
-app.set('view engine', 'pug');
+//app.set('view engine', 'pug');
 
 const updateDb = (obj) => {
         ExCat.update({ _id: obj.id}, { $set: { name: obj.name }}, (err) => {
