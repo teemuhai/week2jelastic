@@ -1,0 +1,14 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title= title
+    body
+        h1= message
+        table
+            each cat in cats
+                tr
+                    td= cat.name
+                    td= cat.age
+                    td= cat.gender
+                    td= cat.weight
