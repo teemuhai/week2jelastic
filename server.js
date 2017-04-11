@@ -6,7 +6,6 @@
 'use strict';
 const express = require('express');
 const mongoose = require('mongoose');
-const moment = require('moment');
 const https = require('https');
 const fs = require('fs');
 const http = require('http');
@@ -15,8 +14,7 @@ const cookieParser = require('cookie-parser');
 const sslkey = fs.readFileSync('ssl-key.pem');
 const sslcert = fs.readFileSync('ssl-cert.pem');
 
-const log_file = fs.createWriteStream('./debug.log', {flags : 'w'});
-const log_stdout = process.stdout;
+
 
 let users = [{id: 0, name: 'Liza'},{id: 1, name : 'Carl'}];
 
@@ -30,7 +28,14 @@ mongoose.Promise = global.Promise; //ES6 Promise
 
 const app = express();
 app.use(cookieParser());
-app.use(express.static('publix'));
+
+//for webcam
+//app.use(express.static('publix'));
+
+//for other routing shit
+app.use(express.static('public'));
+
+app.use(require('./routes'));
 /*app.get('/', (req, res) => {
     const cookie = req.cookies.testCookies;
     const timex = moment().format('MMMM Do YYYY, h:mm a');
@@ -44,8 +49,8 @@ app.use(express.static('publix'));
         'User-Agent: ' + req.headers['user-agent'] + ' User IP-Adress: ' + req.connection.remoteAddress);
 });*/
 
-
-app.route('/user/:query/:name')
+//app route juttu
+/*app.route('/user/:query/:name')
     .get((req, res, next) => {
     console.log(req.params.query)
     const foundUser = users.filter((user) => {
@@ -105,7 +110,8 @@ app.use(function (err, req, res, next) {
     saveError(err);
 });
 
-
+*/
+/*
 https.createServer(options, app).listen(3000);
 
 
@@ -113,7 +119,7 @@ http.createServer((req, res) => {
     res.writeHead(301, { 'Location': 'https://localhost:3000' + req.url });
     res.end();
 }).listen(8080);
-
+*/
 
 /*mongoose.connect('mongodb://myTester:xyz123@localhost:27017/test').then(() => {
     console.log('Connected successfully.');
@@ -178,5 +184,5 @@ const saveError = (d) => {
 });*/
 
 
-//app.listen(3000);
+app.listen(3000);
 
