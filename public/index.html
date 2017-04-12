@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.io task</title>
+</head>
+<body>
+<div>
+    <input placeholder="Type a username" id="userNameInput"> <label id="userLabel"></label>
+</div>
+
+<div>
+    <input placeholder="Type a room name" id="roomInput"> <label id="roomLabel"></label><button id="joinBtn">JOIN</button>
+</div>
+<div>
+<input placeholder="Type a message" id="textInput"><button id="sendText">Send</button>
+</div>
+<div>
+    <h1 id="room"></h1>
+    <p id="message"></p>
+</div>
+
+</body>
+<script src="socket.io.js"></script>
+<script src="main.js"></script>
+
+</html>
