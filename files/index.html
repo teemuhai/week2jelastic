@@ -38,6 +38,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#delete">Delete</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#video">Video</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -166,6 +169,12 @@
                 </div>
             </div>
         </div>
+        <div class="tab-pane" id="video" role="tabpanel">
+            <div class="row">
+                <video id="localVideo"></video>
+                <div id="remoteVideos"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -203,6 +212,16 @@
 <script
         src="//maps.googleapis.com/maps/api/js?key=AIzaSyBMRAqbQDzkJxe9QAEA9KRiIEiCnoIZtkY">
 </script>
+<script src="https://simplewebrtc.com/latest-v2.js"></script>
+<style>
+    #remoteVideos video {
+        height: 150px;
+    }
+    #localVideo {
+        height: 150px;
+    }
+</style>
+<script src="js/rtc.js"></script>
 <script src="modules/moment/moment.js"></script>
 
 <script src="js/main.js"></script>
